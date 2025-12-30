@@ -1,74 +1,93 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
-model Account {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String    @db.ObjectId
-  providerType       String
-  providerId         String
-  providerAccountId  String
-  refreshToken       String?
-  accessToken        String?
-  accessTokenExpires DateTime?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  user               User      @relation(fields: [userId], references: [id])
+enum Role {
+  NOT_SET
+  JOB_SEEKER
+  EMPLOYER
+  ADMIN
+}
 
-  @@unique([providerId, providerAccountId])
+enum ApplicationStatus {
+  PENDING
+  VIEWED
+  SHORTLISTED
+  SELECTED
+}
+
+enum JobListingStatus {
+  HIRING
+  ENDED
+}
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
   userId       String   @db.ObjectId
   expires      DateTime
-  sessionToken String   @unique
-  accessToken  String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
   user         User     @relation(fields: [userId], references: [id])
 }
 
 model User {
-  // common attributes
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  // for both
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?   @unique
+  email         String?          @unique
   emailVerified DateTime?
+  username      String?          @unique @default(nanoid(5)) // might not use
+  slug          String?          @unique @default(nanoid(5))
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  role          Role             @default(NOT_SET)
+  location      String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+
+  // for job seeker
   bio           String?
+  salary        String?
+  resume        String? 
+  skills        String[]
+  experiences   Experience[]
+  educations    Education[]
+  jobDomain     String?
+  contact       String? // Contact details for employers
 
-  // companies
-  tagline String?
-  desc    String?
-  founded String?
-  size    String?
-  website String?
-
-  // job seekers
-  salary      String?
-  resume      String?
-  skills      String[]
-  experiences Experiences[]
-  educations  Education[]
-  jobDomain   String?
-  application JobApplication[]
-  jobListing  JobListing[]
-
-  accounts Account[]
-  sessions Session[]
+  // for companies
+  tagline       String?
+  desc          String?
+  founded       String?
+  size          String?
+  website       String?
+  views         Int              @default(0)
+  jobListings   JobListing[]
+  applications  JobApplication[]
+  notifications Notification[]
 }
 
 model VerificationRequest {
@@ -82,71 +101,69 @@ model VerificationRequest {
   @@unique([identifier, token])
 }
 
-model Experiences {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String    @db.ObjectId
-  user        User      @relation(fields: [userId], references: [id])
-  companyName String
-  startDate   DateTime
-  endDate     DateTime?
-  desc        String?
-  role        String
-}
-
-model Education {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String    @db.ObjectId
-  user           User      @relation(fields: [userId], references: [id])
-  InstituteName  String
-  startDate      DateTime
-  endDate        DateTime?
-  degree         String?
-  specialization String?
+model JobListing {
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  location     String
+  category     String
+  salary       String
+  keywords     String[]
+  employerId   String           @db.ObjectId
+  employer     User             @relation(fields: [employerId], references: [id])
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  numapplications Int           @default(0)
+  views        Int              @default(0)
+  applications JobApplication[]
+  status       JobListingStatus @default(HIRING)
 }
 
 model JobApplication {
-  id            String            @id @default(auto()) @map("_id") @db.ObjectId
-  jobListingId  String            @db.ObjectId
-  jobListing    JobListing        @relation(fields: [jobListingId], references: [id])
-  applicationId String            @db.ObjectId
-  applicant     User              @relation(fields: [applicationId], references: [id])
-  name          String
-  email         String
-  resume        String?
-  salary        String
-  skills        String[]
-  appliedAt     DateTime          @default(now())
-  uploadedAt    DateTime          @updatedAt
-  status        applicationStatus @default(PENDING)
+  id           String            @id @default(auto()) @map("_id") @db.ObjectId
+  jobListingId String            @db.ObjectId
+  applicantId  String            @db.ObjectId // to fetch his previous experiences
+  applicant    User              @relation(fields: [applicantId], references: [id])
+  jobListing   JobListing        @relation(fields: [jobListingId], references: [id])
+  name         String
+  email        String
+  phone        Int?
+  salary       String? // expected
+  skills       String[]
+  resume       String
+  status       ApplicationStatus @default(PENDING)
+  appliedAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 }
 
-model JobListing {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  applications    JobApplication[]
-  employerId      String           @db.ObjectId
-  employer        User?            @relation(fields: [employerId], references: [id])
-  title           String
-  desc            String
-  loc             String
-  category        String[]
-  salary          String
-  keywords        String[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime
-  views           Int              @default(0)
-  numApplications Int              @default(0)
-  status          JoblistingStatus @default(HIRING)
+model Experience {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  companyName String
+  role        String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
 }
 
-enum JoblistingStatus {
-  HIRING
-  HIRED
-  CLOSED
+model Education {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  institution String
+  degree      String
+  field       String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
 }
 
-enum applicationStatus {
-  HIRED
-  SHORTLISTED
-  REJECTED
-  PENDING
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
