@@ -5,10 +5,148 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
+}
+
+model Account {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String    @db.ObjectId
+  providerType       String
+  providerId         String
+  providerAccountId  String
+  refreshToken       String?
+  accessToken        String?
+  accessTokenExpires DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  user               User      @relation(fields: [userId], references: [id])
+
+  @@unique([providerId, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  expires      DateTime
+  sessionToken String   @unique
+  accessToken  String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model User {
+  // common attributes
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  bio           String?
+
+  // companies
+  tagline String?
+  desc    String?
+  founded String?
+  size    String?
+  website String?
+
+  // job seekers
+  salary      String?
+  resume      String?
+  skills      String[]
+  experiences Experiences[]
+  educations  Education[]
+  jobDomain   String?
+  application JobApplication[]
+  jobListing  JobListing[]
+
+  accounts Account[]
+  sessions Session[]
+}
+
+model VerificationRequest {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, token])
+}
+
+model Experiences {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  companyName String
+  startDate   DateTime
+  endDate     DateTime?
+  desc        String?
+  role        String
+}
+
+model Education {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String    @db.ObjectId
+  user           User      @relation(fields: [userId], references: [id])
+  InstituteName  String
+  startDate      DateTime
+  endDate        DateTime?
+  degree         String?
+  specialization String?
+}
+
+model JobApplication {
+  id            String            @id @default(auto()) @map("_id") @db.ObjectId
+  jobListingId  String            @db.ObjectId
+  jobListing    JobListing        @relation(fields: [jobListingId], references: [id])
+  applicationId String            @db.ObjectId
+  applicant     User              @relation(fields: [applicationId], references: [id])
+  name          String
+  email         String
+  resume        String?
+  salary        String
+  skills        String[]
+  appliedAt     DateTime          @default(now())
+  uploadedAt    DateTime          @updatedAt
+  status        applicationStatus @default(PENDING)
+}
+
+model JobListing {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  applications    JobApplication[]
+  employerId      String           @db.ObjectId
+  employer        User?            @relation(fields: [employerId], references: [id])
+  title           String
+  desc            String
+  loc             String
+  category        String[]
+  salary          String
+  keywords        String[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime
+  views           Int              @default(0)
+  numApplications Int              @default(0)
+  status          JoblistingStatus @default(HIRING)
+}
+
+enum JoblistingStatus {
+  HIRING
+  HIRED
+  CLOSED
+}
+
+enum applicationStatus {
+  HIRED
+  SHORTLISTED
+  REJECTED
+  PENDING
 }
