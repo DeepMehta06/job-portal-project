@@ -106,6 +106,72 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="py-20 px-4 bg-zinc-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-16 text-center animate-in fade-in slide-in-from-bottom-3 duration-700">
+            <h2 className="text-4xl font-bold text-zinc-900 mb-3">How It Works</h2>
+            <p className="text-zinc-600 text-lg">Your journey to success in three simple steps</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="text-center border-zinc-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-4 delay-100">
+              <CardHeader>
+                <div className="mx-auto mb-4 w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <CardTitle className="text-2xl mb-2">Search</CardTitle>
+                <CardDescription className="text-base text-zinc-600">
+                  Browse through thousands of verified job listings from top companies worldwide
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-zinc-500">
+                  Use our advanced filters to find positions that match your skills, experience, and career goals
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="text-center border-zinc-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-4 delay-200">
+              <CardHeader>
+                <div className="mx-auto mb-4 w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <CardTitle className="text-2xl mb-2">Apply with Ease</CardTitle>
+                <CardDescription className="text-base text-zinc-600">
+                  Submit applications quickly with your saved profile and track all your applications in one place
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-zinc-500">
+                  One-click applications, instant notifications, and seamless communication with employers
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="text-center border-zinc-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-4 delay-300">
+              <CardHeader>
+                <div className="mx-auto mb-4 w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <CardTitle className="text-2xl mb-2">Grow Your Career</CardTitle>
+                <CardDescription className="text-base text-zinc-600">
+                  Land your dream job and unlock new opportunities for professional growth and development
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-zinc-500">
+                  Get hired by leading companies and take your career to the next level with continuous support
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       <section className="py-20 px-4 bg-zinc-900 text-white">
         <div className="max-w-4xl mx-auto text-center space-y-6 animate-in fade-in duration-1000">
           <h2 className="text-4xl font-bold">Ready to Start Your Journey?</h2>
