@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 export const authOption = {
     adapter: PrismaAdapter(prisma),
     session : {
-        stratergy : "jwt"
+        strategy : "jwt"  // Fixed typo: was "stratergy"
     },
     pages : {
         signIn : '/sign-in'
@@ -14,7 +14,12 @@ export const authOption = {
     providers : [
         GoogleProvider({
             clientId : process.env.GOOGLE_CLIENT_ID,
-            clientSecret : process.env.GOOGLE_CLIENT_SECRET
+            clientSecret : process.env.GOOGLE_CLIENT_SECRET,
+            authorization: {
+                params: {
+                    prompt: "select_account"
+                }
+            }
         })
     ],
     callbacks : {
@@ -37,7 +42,7 @@ export const authOption = {
                     token.email = dbUser.email;
                     token.role = dbUser.role;
                     token.slug = dbUser.slug;
-                    token.iamge = dbUser.iamge;
+                    token.image = dbUser.image;
                 }
                 else {
                     const newUser = await prisma.user.create({
@@ -49,6 +54,11 @@ export const authOption = {
                         }
                     })
                     token.id = newUser.id;
+                    token.name = newUser.name;
+                    token.email = newUser.email;
+                    token.role = newUser.role;
+                    token.image = newUser.image;
+                    token.slug = newUser.slug;
                 }
             }
             return token;
@@ -69,4 +79,4 @@ export const authOption = {
     }
 }
 
-export const getAuthAccount = () => getServerSession(authOption);
+export const getAuthAccount = () => getServerSession(authOption)
