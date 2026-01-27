@@ -1,22 +1,19 @@
 const { getAuthAccount } = require("@/lib/auth");
-const { notFound } = require("next/navigation");
+import {notFound, redirect} from "next/navigation";
 import React from "react";
 import { checkOnboarding } from "../actions/onBoarding";
+import OnboardingPage from "./page";
 
-async function OnboardingLayout({children}){
+async function OnboardingLayout({ children }) {
     const session = await getAuthAccount();
     const userId = session?.user?.id
-    if(!session) return notFound();
+    if (!session) redirect('/sign-in');
 
     const onboardingStatus = await checkOnboarding(session?.user?.id);
     console.log(onboardingStatus)
-    if(onboardingStatus=='NOT_SET') console.log(true)
-    return(
-        <>
-        React.cloneElement(children, {
-            userId
-        })
-        </>
+    if (onboardingStatus == 'NOT_SET') return redirect('/jobs');
+    return (
+        <OnboardingPage userId = {userId} />
     )
 }
 

@@ -1,19 +1,21 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/navbar";
-import {Poppins} from "next/font/google"
+import { Poppins } from "next/font/google"
+import { Toaster } from "@/components/ui/sonner"
 
-const poppins  = Poppins({
+const poppins = Poppins({
   subsets: ['latin'],
-  weight:['300','400','500','600', '700', '800']
+  weight: ['300', '400', '500', '600', '700', '800']
 })
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${poppins.className} antialiased`}>
-        <Navbar/>
+        <Navbar />
         {children}
+        <Toaster />
       </body>
     </html>
   );

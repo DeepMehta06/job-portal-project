@@ -4,21 +4,24 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { updateUserType } from '../actions/onboarding'
+import { onBoardingSubmission } from '../actions/onBoarding'
+import { toast } from "sonner"
 
 export default function OnboardingPage({ userId }) {
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const router = useRouter() // Initialize hook
 
-  const handleUserTypeSelection = async (userType) => {
-    setIsLoading(true)
-    const result = await updateUserType(userId, userType)
-    setIsLoading(false)
+  const handleOnboardingSubmission = async ({ requestedRole }) => {
+    // requesting the server action with the object it expects
+    // Use the 'userId' prop that is already available in the component scope
+    const updatedResponse = await onBoardingSubmission({ requestedRole });
 
-    if (result.success) {
-      router.push('/settings')
+    if (updatedResponse) {
+      // If success, redirect the user client-side
+      router.push('/jobs');
+      router.refresh(); // Ensure the layout knows the data changed
     } else {
-      console.error(result.error)
+      toast.error("Update failed, please try again.")
     }
   }
 
@@ -31,14 +34,14 @@ export default function OnboardingPage({ userId }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <Button
-            onClick={() => handleUserTypeSelection('EMPLOYER')}
+            onClick={() => handleOnboardingSubmission({ requestedRole: 'EMPLOYER' })}
             disabled={isLoading}
             className="w-full"
           >
             I'm an Organization
           </Button>
           <Button
-            onClick={() => handleUserTypeSelection('JOB_SEEKER')}
+            onClick={() => handleOnboardingSubmission({ requestedRole: 'JOB_SEEKER' })}
             disabled={isLoading}
             className="w-full"
           >

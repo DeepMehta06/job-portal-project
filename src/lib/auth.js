@@ -5,16 +5,16 @@ import { getServerSession } from "next-auth";
 
 export const authOption = {
     adapter: PrismaAdapter(prisma),
-    session : {
-        strategy : "jwt"  // Fixed typo: was "stratergy"
+    session: {
+        strategy: "jwt"  // Fixed typo: was "stratergy"
     },
-    pages : {
-        signIn : '/sign-in'
+    pages: {
+        signIn: '/sign-in'
     },
-    providers : [
+    providers: [
         GoogleProvider({
-            clientId : process.env.GOOGLE_CLIENT_ID,
-            clientSecret : process.env.GOOGLE_CLIENT_SECRET,
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             authorization: {
                 params: {
                     prompt: "select_account"
@@ -22,21 +22,21 @@ export const authOption = {
             }
         })
     ],
-    callbacks : {
-        async jwt({token, user}) {
-            if(user){
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
                 const dbUser = await prisma.user.findUnique({
-                    where : {email:user.email},
-                    select : {
-                        name :true, 
-                        email : true,
-                        role : true,
-                        image : true,
-                        slug : true,
-                        id : true
+                    where: { email: user.email },
+                    select: {
+                        name: true,
+                        email: true,
+                        role: true,
+                        image: true,
+                        slug: true,
+                        id: true
                     }
                 })
-                if(dbUser){
+                if (dbUser) {
                     token.id = dbUser.id;
                     token.name = dbUser.name;
                     token.email = dbUser.email;
@@ -46,11 +46,11 @@ export const authOption = {
                 }
                 else {
                     const newUser = await prisma.user.create({
-                        data : {
-                            email : user.email,
-                            name : user.name,
-                            image : user.image,
-                            role : 'JOB_SEEKER'
+                        data: {
+                            email: user.email,
+                            name: user.name,
+                            image: user.image,
+                            role: 'JOB_SEEKER'
                         }
                     })
                     token.id = newUser.id;
@@ -63,13 +63,13 @@ export const authOption = {
             }
             return token;
         },
-        async session({session, token}){
-            if(token){
-            session.user.id = token.id,
-            session.user.name = token.name,
-            session.user.email = token.email,
-            session.user.image = token.image,
-            session.user.role = token.role
+        async session({ session, token }) {
+            if (token) {
+                session.user.id = token.id,
+                    session.user.name = token.name,
+                    session.user.email = token.email,
+                    session.user.image = token.image,
+                    session.user.role = token.role
             }
             return session;
         },
