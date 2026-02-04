@@ -21,7 +21,7 @@ async function SettingPage() {
     else notFound();
     return (
         <>
-
+        
         </>
     )
 }
