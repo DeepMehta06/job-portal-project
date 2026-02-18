@@ -42,7 +42,6 @@ function UserSettingsForm(){
                     id='name' 
                 />
                 <Button type="submit">Save</Button>
-                <button></button>
             </form>
         </div>
     )
