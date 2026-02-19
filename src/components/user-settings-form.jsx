@@ -41,6 +41,7 @@ function UserSettingsForm(){
                     {...register('name')}
                     id='name' 
                 />
+                <></>
                 <Button type="submit">Save</Button>
             </form>
         </div>
