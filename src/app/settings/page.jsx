@@ -4,7 +4,6 @@ import { notFound, redirect } from 'next/navigation';
 import CompanySettingForm from '@/components/pages/company-setting-page';
 import UserSettingForm from '@/components/pages/user-setting-page';
 import { prisma } from '@/lib/prisma';
-// tijwjkff
 async function SettingPage() {
     const session = await getAuthAccount();
     if (!session || !session.user) return notFound();
