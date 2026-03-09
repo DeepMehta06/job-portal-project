@@ -25,5 +25,3 @@ async function SettingPage() {
     )
 }
 export default SettingPage;
-//jahsdbkhbciadb
-//1
