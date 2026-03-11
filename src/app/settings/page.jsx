@@ -25,4 +25,3 @@ async function SettingPage() {
     )
 }
 export default SettingPage;
-//khhb,jkjknjkh
