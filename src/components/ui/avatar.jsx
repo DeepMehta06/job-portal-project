@@ -12,7 +12,6 @@ const Avatar = React.forwardRef(({ className, ...props }, ref) => (
     {...props} />
 ))
 Avatar.displayName = AvatarPrimitive.Root.displayName
-//grfsdfes
 const AvatarImage = React.forwardRef(({ className, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
